@@ -16,14 +16,13 @@ std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificatio
 
     for (auto client : clients)
     {
-        cout<<"finding: "<< client.getIdNumber()<<" "<<client.getFullName()<<endl;
-        if(client.getIdNumber() == identificationNumber) //find the correct pointer to image in the vector
-            return make_shared<Client>( client ); //return the Image
+        cout<<"finding: "<< client->getIdNumber()<<" "<<client->getFullName()<<endl;
+        if(client->getIdNumber() == identificationNumber) //find the correct pointer to image in the vector
+            return  client; //return the Image
     }
 
-    auto newClient = Client( identificationNumber );
-    clients.push_back( newClient );
-    auto ptr = make_shared<Client>( clients.back() );
+    auto ptr = make_shared<Client>( Client( identificationNumber ) );
+    clients.push_back( ptr );
     cout<<" client created "<<ptr->getIdNumber()<<endl;
         ptr->setFullName("Jan Kowalski");
     return ptr;

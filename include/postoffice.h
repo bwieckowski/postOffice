@@ -37,7 +37,7 @@ class PostOffice : public IPostOffice
     private:
          bool validGate(  unsigned );
          unsigned gateCount;
-         std::vector<Client> clients;
+         std::vector< std::shared_ptr<Client> > clients;
          std::map< int, Client > expectedClientsInGates;
          std::priority_queue<Client, vector<Client>, compareClientPriority> clientsQueue;
 };
