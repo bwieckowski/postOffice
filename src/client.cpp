@@ -3,7 +3,6 @@
 //
 
 #include <array>
-#include <iostream>
 #include<stdarg.h>
 #include "../include/client.h"
 #include "../include/exceptions.h"
@@ -22,10 +21,10 @@ std::string Client::getFullName()
 {
     return fullName;
 }
+
 int Client::getPriority() {
     return priority;
 }
-
 
 void Client::setFullName(const std::string& fullName)
 {
@@ -41,7 +40,7 @@ void Client::newPackage(const std::string &packageId) {
     if( !packages.empty() ) {
         for (auto i = packages.begin(); i != packages.end(); i++) {
             if ((*i) == packageId)
-                throw PackageExistsException("Client has package with this ID \n");
+                throw PackageExistsException("package with specified ID already exists.\n");
         }
         packages.push_back( packageId );
     }
@@ -49,7 +48,6 @@ void Client::newPackage(const std::string &packageId) {
         packages.push_back( packageId );
 
 }
-
 
 void Client::packagesCollected() {
     packages.clear();
@@ -64,7 +62,7 @@ void Client::updateBiometricData(const std::string& biometricData) throw( Incorr
     if( isDNASequenceCorrect(biometricData) )
         this->biometricData = biometricData;
     else
-        throw IncorrectBiometricDataException(" Incorect DNA sequence");
+        throw IncorrectBiometricDataException("Incorect DNA sequence\n");
 
 }
 
@@ -80,15 +78,15 @@ const std::string& Client::getBiometricData(){
 }
 
 
-void displayArray( int **array, int lenght1,int lenght2)
-{
-    for (int i = 0; i < lenght1; ++i) {
-        for (int j = 0; j < lenght2; ++j) {
-             printf( "%d \b ",array[i][j]);
-        }
-        std::cout<<std::endl;
-    }
-}
+//void displayArray( int **array, int lenght1,int lenght2)
+//{
+//    for (int i = 0; i < lenght1; ++i) {
+//        for (int j = 0; j < lenght2; ++j) {
+//             printf( "%d \b ",array[i][j]);
+//        }
+//        std::cout<<std::endl;
+//    }
+//}
 
 
 int maxofElements(int n_args, ...)
@@ -116,7 +114,7 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
 
 
     if( !isDNASequenceCorrect( biometricData ) )
-        throw IncorrectBiometricDataException( "Incorrect DNA Sequence " );
+        throw IncorrectBiometricDataException( "Incorrect DNA Sequence\n" );
 
     int W1 = 2;
 
@@ -133,7 +131,7 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
 
             if( j == 0 || i == 0) {
                 substitutionMatrix[i][j] = 0;
-                continue;
+               // continue;
             }
             if( biometricData[i-1] == this->biometricData[j-1] )
                 substitutionMatrix[i][j] = 3;
@@ -148,7 +146,7 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
         for (int j = 0; j < arrayLenghtCompare; ++j) {
            if( i == 0 || j == 0) {
                traceMatrix[i][j] = 0;
-               continue;
+            //   continue;
            }
 
            int max = maxofElements(4, substitutionMatrix[i][j]+traceMatrix[i-1][j-1],
@@ -197,10 +195,8 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
   //      printf(" %d, ",traceMatrix[i][j]);
     }
 
-    int shortersequence = 0;
-    if( biometricData.length() > this->biometricData.length() )
-        shortersequence = this->biometricData.length();
-    else
+    int shortersequence = this->biometricData.length();
+    if( biometricData.length() < shortersequence )
         shortersequence = biometricData.length();
 
     return ((maxVal/shortersequence) > threshold);

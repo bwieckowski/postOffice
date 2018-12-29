@@ -11,7 +11,8 @@ PackageExistsException::PackageExistsException(const std::string &msg) : message
 
 const char *PackageExistsException::what() const noexcept
 {
-    return message.c_str();
+    std::string mes= "[EXCEPTION] "+message;
+    return mes.c_str();
 }
 
 

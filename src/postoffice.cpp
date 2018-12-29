@@ -1,8 +1,7 @@
 //
 // Created by Bartek on 12/12/2018.
 //
-
-#include <iostream>
+//#include <iostream>
 #include "../include/postoffice.h"
 
 
@@ -15,40 +14,38 @@ std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificatio
 
 
     for (auto client : clients)
-    {
-        if(client->getIdNumber() == identificationNumber) //find the correct pointer to image in the vector
-            return  client; //return the Image
-    }
+        if(client->getIdNumber() == identificationNumber)
+            return  client;
 
     auto ptr = make_shared<Client>( Client( identificationNumber ) );
     clients.push_back( ptr );
-        ptr->setFullName("Jan Kowalski");
     return ptr;
 
 }
 
 void PostOffice::enqueueClient(const std::shared_ptr<IClient> &client) {
 
+    if( client == nullptr)
+        return;
+
     shared_ptr<Client> clientPtr2 = dynamic_pointer_cast<Client>(client);
-    clientsQueue.push( *clientPtr2 );
+    clientsQueue.push( clientPtr2 );
 
-}
-
-bool PostOffice::validGate( unsigned gateIndex )
-{
-    return  !(( -1 < gateIndex) && ( gateIndex > this->gateCount ));
 }
 
 
 void PostOffice::gateReady(unsigned gateIndex) throw( IncorrectGateException )  {
 
-    if( !validGate( gateIndex ) )
-        throw IncorrectGateException(" Inccorect gate Number to Large or to Small \n");
+    if( gateIndex > this->gateCount )
+        throw IncorrectGateException("Inccorect gate Number to Large or to Small \n");
 
-   auto clients = clientsQueue.top();
+   if( clientsQueue.size() < 1 )
+       return;
 
-    expectedClientsInGates[ gateIndex ] = clients;
-    clientsQueue.pop();
+       auto client = clientsQueue.top();
+       expectedClientsInGates[ gateIndex ] = client;
+       clientsQueue.pop();
+
 
 }
 
@@ -60,7 +57,7 @@ std::vector<std::string> PostOffice::getStatus() {
 
         auto it = expectedClientsInGates.find(i);
         if( it != expectedClientsInGates.end() )
-            statusVector.push_back( expectedClientsInGates[i].getFullName() );
+            statusVector.push_back( expectedClientsInGates[i]->getFullName() );
         else
             statusVector.push_back( std::string() );
     }
@@ -74,13 +71,18 @@ std::vector<std::string> PostOffice::getStatus() {
 
     auto gate = expectedClientsInGates.find( gateIndex );
 
+    if( gateIndex > this->gateCount)
+        throw IncorrectGateException( "There is no gate with this ID" );
+
     if( gate == expectedClientsInGates.end()  )
-        throw IncorrectGateException( " there is nobody in the gate" );
+        throw IncorrectGateException( "There is nobody in the gate" );
 
-   auto it =  ( *gate ).second.awaitingPackages().begin();
-   for( ; it != ( *gate ).second.awaitingPackages().end(); it++ )
-       cout<<(*it)<<endl;
+    ( *gate ).second->packagesCollected();
 
-    ( *gate ).second.packagesCollected();
-    
-}
+
+//   auto awaitingPackages = ( *gate ).second->awaitingPackages();
+//   for( auto package : awaitingPackages )
+//       cout<< package <<endl;
+
+
+ }

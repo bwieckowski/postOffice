@@ -17,6 +17,8 @@ public:
     static void clientIntrodue();
     void clientEnqueueStructur();
     void uniqueClientTest();
+    void gateTest();
+    void biologyIdentyficationTest();
 
     void defaultTest();
 };

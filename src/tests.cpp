@@ -22,6 +22,23 @@ void Test::doTests() {
 }
 
 
+void Test::biologyIdentyficationTest()
+{
+    auto post_office = IPostOffice::create(3);
+    auto client0 = post_office->getClient("96052791812");
+    client0->setFullName("Jan Kowalski");
+    client0->updatePriority(10);
+    cout<< client0->getFullName()<<endl;
+
+    auto client1 = post_office->getClient("69100839677");
+    client1->setFullName("Adam Nowak");
+    client1->updatePriority(1);
+    cout<< client1->getFullName()<<endl;
+
+}
+
+
+
 void displayArray( std::vector<string> array, int lenght1)
 {
     int j = 0;
@@ -50,6 +67,26 @@ void Test::uniqueClientTest()
     cout<< clientTmp->getFullName()<<endl;
 }
 
+void Test::gateTest()
+{
+    auto post_office = IPostOffice::create(5);
+
+    auto client0 = post_office->getClient("96052791812");
+    client0->setFullName("Jan Kowalski");
+
+  //  post_office->enqueueClient(client0);
+
+    try {
+        post_office->gateReady(3);
+    } catch( IncorrectGateException  &gateExct)
+    {
+        cout<<gateExct.what();
+    }
+
+
+
+}
+
 
 void Test::defaultTest()
 {
@@ -57,7 +94,6 @@ void Test::defaultTest()
 
     auto client0 = post_office->getClient("96052791812");
     client0->setFullName("Jan Kowalski");
-
     auto client1 = post_office->getClient("69100839677");
     client1->setFullName("Adam Nowak");
     client1->updatePriority(1);
@@ -65,13 +101,8 @@ void Test::defaultTest()
     post_office->enqueueClient(client0);
     post_office->enqueueClient(client1);
 
-    client0->updatePriority( 10 );
-
     post_office->gateReady(3);
     auto status = post_office->getStatus();
-
-    displayArray( status, 5);
-
     assert(status[3] == "Adam Nowak");
 
     post_office->gateReady(3);
@@ -91,14 +122,62 @@ void Test::clientIntrodue() {
         client0->newPackage("00x29301asdhasd");
         client0->newPackage("21312312");
         client0->newPackage("21312312");
-        client0->newPackage("21312312");
-        client0->newPackage("21312312");
-        client0->newPackage("21312312");
     } catch ( PackageExistsException &excption )
     {
         cout<<"Exception: "<<endl;
         cout<<excption.what();
+
     }
+
+    cout<<"Waiting packages:"<<endl;
+    for( auto package : client0->awaitingPackages())
+        cout<<package<<endl;
+
+    post_office->gateReady(2);
+    post_office->enqueueClient( client0 );
+
+    try{
+        post_office->gateReady(6);
+    }catch( IncorrectGateException &gateException)
+    {
+        cout<<gateException.what();
+        post_office->gateReady(1);
+    }
+
+
+
+    cout<<"Waiting Clients:"<<endl;
+    for( auto client : post_office->getStatus())
+        cout<<client<<endl;
+
+
+    try {
+        post_office->collectPackages(7);
+    }catch( IncorrectGateException &ext)
+    {
+        cout<<ext.what()<<endl;
+    }
+
+
+    try {
+        post_office->collectPackages(4);
+    }catch( IncorrectGateException &ext)
+    {
+        cout<<ext.what()<<endl;
+    }
+
+
+    try {
+        cout<<"packages out"<<endl;
+        post_office->collectPackages(1);
+    }catch( IncorrectGateException &ext)
+    {
+        cout<<ext.what()<<endl;
+    }
+
+
+
+
 
 }
 

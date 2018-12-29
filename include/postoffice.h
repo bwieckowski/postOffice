@@ -14,9 +14,14 @@ using namespace std;
 
 struct compareClientPriority{
 
-    bool operator ()(   Client &cl1,   Client &cl2 )
+    bool operator ()(  Client cl1, Client cl2 )
     {
-         return cl1.getPriority() < cl2.getPriority();
+        return cl1.getPriority() < cl2.getPriority();
+    }
+
+    bool operator ()(   std::shared_ptr<Client> cl1, std::shared_ptr<Client> cl2 )
+    {
+         return cl1->getPriority() < cl2->getPriority();
     }
 };
 
@@ -38,8 +43,8 @@ class PostOffice : public IPostOffice
          bool validGate(  unsigned );
          unsigned gateCount;
          std::vector< std::shared_ptr<Client> > clients;
-         std::map< int, Client > expectedClientsInGates;
-         std::priority_queue<Client, vector<Client>, compareClientPriority> clientsQueue;
+         std::map< int, std::shared_ptr<Client> > expectedClientsInGates;
+         std::priority_queue< std::shared_ptr<Client>, std::vector<std::shared_ptr<Client>>, compareClientPriority> clientsQueue;
 };
 
 
