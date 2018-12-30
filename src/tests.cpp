@@ -35,6 +35,12 @@ void Test::biologyIdentyficationTest()
     client1->updatePriority(1);
     cout<< client1->getFullName()<<endl;
 
+   // client0->updateBiometricData( "AGCT" );
+   // client0->verifyBiometricData( "AGCT", 2 );
+
+    client0->updateBiometricData( "GGTTGACTA" );
+    client0->verifyBiometricData( "TGTTACGG", 2 );
+
 }
 
 

@@ -78,15 +78,20 @@ const std::string& Client::getBiometricData(){
 }
 
 
-//void displayArray( int **array, int lenght1,int lenght2)
-//{
-//    for (int i = 0; i < lenght1; ++i) {
-//        for (int j = 0; j < lenght2; ++j) {
-//             printf( "%d \b ",array[i][j]);
-//        }
-//        std::cout<<std::endl;
-//    }
-//}
+void displayArray(   std::vector< std::vector<int> > array , int lenght1, int lenght2)
+{
+    for (int i = 0; i < lenght1; ++i) {
+        for (int j = 0; j < lenght2; ++j) {
+            if(array[i][j] == -3 )
+                printf( "%d \b ",0);
+            else
+                printf( "%d \b ",array[i][j]);
+
+        }
+     printf("\n");
+    }
+    printf("\n");
+}
 
 
 int maxofElements(int n_args, ...)
@@ -122,18 +127,13 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
      int arrayLenghtCompare = biometricData.length()+1;
 
     std::vector< std::vector<int> > traceMatrix( arrayLenghtOrginal, std::vector<int> (arrayLenghtCompare, 0));
-    std::vector< std::vector<int> > substitutionMatrix( arrayLenghtOrginal, std::vector<int> (arrayLenghtCompare, 0));
+    std::vector< std::vector<int> > substitutionMatrix( arrayLenghtOrginal-1, std::vector<int> (arrayLenghtCompare-1, 0));
 
 
-    //Complite substitution Matrix
-    for (int i = 0; i < arrayLenghtOrginal; ++i) {
-        for (int j = 0; j < arrayLenghtCompare; ++j) {
+    for (int i = 0; i < this->biometricData.length(); ++i) {
+        for (int j = 0; j < biometricData.length(); ++j) {
 
-            if( j == 0 || i == 0) {
-                substitutionMatrix[i][j] = 0;
-               // continue;
-            }
-            if( biometricData[i-1] == this->biometricData[j-1] )
+            if( biometricData[j] == this->biometricData[i] )
                 substitutionMatrix[i][j] = 3;
             else
                 substitutionMatrix[i][j] = -3;
@@ -141,65 +141,38 @@ bool Client::verifyBiometricData(const std::string& biometricData, double thresh
     }
 
 
-
     for (int i = 0; i < arrayLenghtOrginal; ++i) {
         for (int j = 0; j < arrayLenghtCompare; ++j) {
            if( i == 0 || j == 0) {
                traceMatrix[i][j] = 0;
-            //   continue;
+               continue;
            }
 
-           int max = maxofElements(4, substitutionMatrix[i][j]+traceMatrix[i-1][j-1],
+           int max = maxofElements(4, traceMatrix[i-1][j-1]+substitutionMatrix[i-1][j-1],
                                       traceMatrix[i-1][j]-W1,
                                       traceMatrix[i][j-1]-W1,
                                       0 );
            traceMatrix[i][j] =  max;
         }
     }
-  //  displayArray( substitutionMatrix, arrayLenghtOrginal,arrayLenghtCompare);//,this->biometricData,biometricData);
-  //  displayArray( traceMatrix, arrayLenghtOrginal, arrayLenghtCompare);//,this->biometricData,biometricData );
+   // displayArray( substitutionMatrix, arrayLenghtOrginal-1,arrayLenghtCompare-1);//,this->biometricData,biometricData);
+   // displayArray( traceMatrix, arrayLenghtOrginal, arrayLenghtCompare);//,this->biometricData,biometricData );
 
-    int maxi = 0, maxj = 0, maxVal = traceMatrix[0][0];
+    int maxVal = traceMatrix[0][0];
+
     for (int i = 0; i < arrayLenghtOrginal; ++i) {
         for (int j = 0; j < arrayLenghtCompare; ++j) {
             if( traceMatrix[i][j] > maxVal )
-            {
-                maxi = i;
-                maxj = j;
                 maxVal = traceMatrix[i][j];
-            }
+
         }
-    }
-
-  //  printf(" max val : %d \n",maxVal);
-
-    int i= maxi, j = maxj, sum = 0, steps = 0 ;
-
-    //Find Path
-    while( traceMatrix[i][j] != 0 )
-    {
-        sum += traceMatrix[i][j];
-        steps++;
-        if(traceMatrix[i-1][j-1] == 0 )
-        {
-            i = i-1;
-            j = j-1;
-        } else if( traceMatrix[i-1][j-1] > traceMatrix[i-1][j])
-        {
-            i = i-1;
-            j = j-1;
-        } else{
-            i = i - 1;
-        }
-
-  //      printf(" %d, ",traceMatrix[i][j]);
     }
 
     int shortersequence = this->biometricData.length();
     if( biometricData.length() < shortersequence )
         shortersequence = biometricData.length();
 
-    return ((maxVal/shortersequence) > threshold);
+    return ( ( ( double ) maxVal/ (double) shortersequence) > threshold);
 
 
 }
