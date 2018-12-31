@@ -4,6 +4,7 @@
 //#include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <iostream>
 #include "../include/postoffice.h"
 
 using namespace std;
@@ -13,23 +14,14 @@ PostOffice::PostOffice( unsigned gate_count )
     fillClients();
 }
 
-bool fileExist (const std::string& name) {
-    if(FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    }
-}
-
 void PostOffice::fillClients()
 {
 
-    if( !fileExist(SAVEFILE))
-        return;
+    string linia;
+    ifstream data(SAVEFILE);
 
-        string linia;
-        ifstream data(SAVEFILE);
+    if( data.fail() )
+        return;
 
         while (!data.eof()) {
             getline(data, linia, ',');
@@ -44,7 +36,7 @@ void PostOffice::fillClients()
 
                 getline(data, linia, ',');
                 p.updatePriority(atoi(linia.c_str()));
-        //        cout << "PIORYTET: " << linia << endl;
+        //        std::cout << "PIORYTET: " << linia << endl;
 
                 getline(data, linia, ',');
                 if( !linia.empty())
@@ -77,7 +69,6 @@ std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificatio
     for (auto client : clients) {
         if (client->getIdNumber() == identificationNumber)
         {
-
             return client;
         }
 
@@ -173,22 +164,7 @@ void PostOffice::saveClientsToFile()
 
 
  PostOffice::~PostOffice() {
-
-     if (FILE *file = fopen( SAVEFILE, "r")) {
-
-         fclose( file );
          saveClientsToFile();
-
-     } else {
-
-         fclose( file );
-
-         std::ofstream outfile (SAVEFILE);
-         outfile.close();
-
-         saveClientsToFile();
-
-     }
 
  }
 
