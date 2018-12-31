@@ -10,11 +10,6 @@ int main() {
 
 
     Test test = Test();
-    test.gateTest();
-   // test.uniqueClientTest();
-    test.clientIntrodue();
-
-    test.biologyIdentyficationTest();
-
+    test.defaultTest();
     return 0;
 }

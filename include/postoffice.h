@@ -38,12 +38,15 @@ class PostOffice : public IPostOffice
         std::vector<std::string> getStatus();
         void gateReady(unsigned gateIndex) throw( IncorrectGateException );
         void collectPackages(unsigned gateIndex) throw( IncorrectGateException );
+        ~PostOffice();
 
     private:
          bool validGate(  unsigned );
          unsigned gateCount;
+         void fillClients();
          std::vector< std::shared_ptr<Client> > clients;
          std::map< int, std::shared_ptr<Client> > expectedClientsInGates;
+         void saveClientsToFile();
          std::priority_queue< std::shared_ptr<Client>, std::vector<std::shared_ptr<Client>>, compareClientPriority> clientsQueue;
 };
 

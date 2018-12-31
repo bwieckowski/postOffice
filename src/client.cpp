@@ -4,6 +4,7 @@
 
 #include <array>
 #include<stdarg.h>
+#include <fstream>
 #include "../include/client.h"
 #include "../include/exceptions.h"
 
@@ -108,8 +109,9 @@ int maxofElements(int n_args, ...)
     return max;
 }
 
-Client::~Client() {
 
+
+Client::~Client() {
 
 
 }

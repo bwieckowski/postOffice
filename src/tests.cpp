@@ -100,20 +100,38 @@ void Test::defaultTest()
 
     auto client0 = post_office->getClient("96052791812");
     client0->setFullName("Jan Kowalski");
+
     auto client1 = post_office->getClient("69100839677");
     client1->setFullName("Adam Nowak");
     client1->updatePriority(1);
 
+    auto client2 = post_office->getClient("6910034232");
+    client2->setFullName("Adam Mickiewicz");
+    client2->updatePriority(1);
+    client2->updateBiometricData("ACGTT");
+
+    auto client3 = post_office->getClient("33682631");
+    client3->setFullName("Tobjasz Fuszyński");
+    client3->updatePriority(100);
+    client3->updateBiometricData("ACGTTGCC");
+
+
+    client3->newPackage("asda312312aasd");
+
+
+
     post_office->enqueueClient(client0);
     post_office->enqueueClient(client1);
+    post_office->enqueueClient( client3 );
 
     post_office->gateReady(3);
+    post_office->collectPackages(3);
     auto status = post_office->getStatus();
-    assert(status[3] == "Adam Nowak");
+  //  assert(status[3] == "Adam Nowak");
 
     post_office->gateReady(3);
     status = post_office->getStatus();
-    assert(status[3] == "Jan Kowalski");
+  //  assert(status[3] == "Jan Kowalski");
 }
 
 void Test::clientIntrodue() {

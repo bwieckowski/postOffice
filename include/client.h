@@ -9,6 +9,8 @@
 #include <vector>
 #include "exceptions.h"
 
+#define SAVEFILE "clients.csv"
+
 class Client : public IClient
 {
 

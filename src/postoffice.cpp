@@ -2,20 +2,87 @@
 // Created by Bartek on 12/12/2018.
 //
 //#include <iostream>
+#include <fstream>
+#include <stdio.h>
 #include "../include/postoffice.h"
 
-
+using namespace std;
 PostOffice::PostOffice( unsigned gate_count )
 {
     this->gateCount = gate_count;
+    fillClients();
 }
+
+bool fileExist (const std::string& name) {
+    if(FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void PostOffice::fillClients()
+{
+
+    if( !fileExist(SAVEFILE))
+        return;
+
+        string linia;
+        ifstream data(SAVEFILE);
+
+        while (!data.eof()) {
+            getline(data, linia, ',');
+            if( !linia.empty()) {
+                Client p(linia);
+         //       cout << "ID: " << linia << endl;
+
+                getline(data, linia, ',');
+                p.setFullName(linia.c_str());
+        //        cout << "IMIE: " << linia << endl;
+
+
+                getline(data, linia, ',');
+                p.updatePriority(atoi(linia.c_str()));
+        //        cout << "PIORYTET: " << linia << endl;
+
+                getline(data, linia, ',');
+                if( !linia.empty())
+                    p.updateBiometricData(linia);
+        //        cout << "DNA: " << linia << endl;
+
+                getline(data, linia, ',');
+                int packagesAmount = atoi(linia.c_str());
+
+
+                if (packagesAmount > 0)
+                    for (int i = 0; i < packagesAmount; ++i) {
+                        getline(data, linia, ',');
+                        p.newPackage(linia.c_str());
+                    }
+
+                clients.push_back(std::make_shared<Client>(p));
+            }
+        }
+
+        data.close();
+
+
+}
+
 
 std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificationNumber){
 
 
-    for (auto client : clients)
-        if(client->getIdNumber() == identificationNumber)
-            return  client;
+    for (auto client : clients) {
+        if (client->getIdNumber() == identificationNumber)
+        {
+
+            return client;
+        }
+
+    }
+
 
     auto ptr = make_shared<Client>( Client( identificationNumber ) );
     clients.push_back( ptr );
@@ -80,9 +147,48 @@ std::vector<std::string> PostOffice::getStatus() {
     ( *gate ).second->packagesCollected();
 
 
-//   auto awaitingPackages = ( *gate ).second->awaitingPackages();
-//   for( auto package : awaitingPackages )
-//       cout<< package <<endl;
+ }
 
+void PostOffice::saveClientsToFile()
+{
+    std::ofstream myfile;
+    myfile.open(SAVEFILE);
+
+    int sizeClients = clients.size();
+    for (auto clientIter :  clients) {
+        auto client = (*clientIter);
+
+        string bioData = client.getBiometricData();
+
+        myfile<<client.getIdNumber()<<","<<client.getFullName()<<","<<client.getPriority()<<","<<bioData<<","<<client.awaitingPackages().size()<<",";
+
+        if( client.awaitingPackages().size() > 0)
+            for (auto package : client.awaitingPackages() )
+                myfile<<package<<",";
+
+    }
+    myfile.close();
+}
+
+
+
+ PostOffice::~PostOffice() {
+
+     if (FILE *file = fopen( SAVEFILE, "r")) {
+
+         fclose( file );
+         saveClientsToFile();
+
+     } else {
+
+         fclose( file );
+
+         std::ofstream outfile (SAVEFILE);
+         outfile.close();
+
+         saveClientsToFile();
+
+     }
 
  }
+
