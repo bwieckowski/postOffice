@@ -7,7 +7,14 @@
 #include <iostream>
 #include "../include/postoffice.h"
 
-using namespace std;
+
+std::shared_ptr<IPostOffice> IPostOffice::create(unsigned gate_count) {
+
+    std::shared_ptr<IPostOffice> myOffice( new PostOffice(gate_count) );
+    return myOffice;
+
+}
+
 PostOffice::PostOffice( unsigned gate_count )
 {
     this->gateCount = gate_count;
@@ -65,14 +72,10 @@ void PostOffice::fillClients()
 
 std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificationNumber){
 
-
     for (auto client : clients) {
         if (client->getIdNumber() == identificationNumber)
             return client;
-
-
     }
-
 
     auto ptr = make_shared<Client>( Client( identificationNumber ) );
     clients.push_back( ptr );
@@ -82,11 +85,12 @@ std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificatio
 
 void PostOffice::enqueueClient(const std::shared_ptr<IClient> &client) {
 
-    if( client == nullptr)
-        return;
+    if( client != nullptr){
+        shared_ptr<Client> clientPtr2 = dynamic_pointer_cast<Client>(client);
+        clientsQueue.push( clientPtr2 );
+    }
 
-    shared_ptr<Client> clientPtr2 = dynamic_pointer_cast<Client>(client);
-    clientsQueue.push( clientPtr2 );
+
 
 }
 
@@ -96,10 +100,10 @@ void PostOffice::gateReady(unsigned gateIndex) throw( IncorrectGateException )  
     if( gateIndex >= this->gateCount )
         throw IncorrectGateException("Inccorect gate Number to Large\n");
 
-   if( clientsQueue.size() < 1 )
+   if( clientsQueue.empty() )
        return;
 
-       expectedClientsInGates[ gateIndex ] = clientsQueue.top();;
+       expectedClientsInGates[ gateIndex ] = clientsQueue.top();
        clientsQueue.pop();
 
 
