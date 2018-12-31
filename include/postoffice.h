@@ -5,11 +5,15 @@
 #ifndef PROJEKT3_POSTOFFICE_H
 #define PROJEKT3_POSTOFFICE_H
 
+#define SAVEFILE "clients.csv"
+
 #include "ipostoffice.h"
 #include "client.h"
 #include "queue"
 #include "../include/exceptions.h"
 #include <map>
+
+
 using namespace std;
 
 struct compareClientPriority{

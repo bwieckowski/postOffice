@@ -68,9 +68,8 @@ std::shared_ptr<IClient> PostOffice::getClient(const std::string & identificatio
 
     for (auto client : clients) {
         if (client->getIdNumber() == identificationNumber)
-        {
             return client;
-        }
+
 
     }
 
@@ -94,14 +93,13 @@ void PostOffice::enqueueClient(const std::shared_ptr<IClient> &client) {
 
 void PostOffice::gateReady(unsigned gateIndex) throw( IncorrectGateException )  {
 
-    if( gateIndex > this->gateCount )
-        throw IncorrectGateException("Inccorect gate Number to Large or to Small \n");
+    if( gateIndex >= this->gateCount )
+        throw IncorrectGateException("Inccorect gate Number to Large\n");
 
    if( clientsQueue.size() < 1 )
        return;
 
-       auto client = clientsQueue.top();
-       expectedClientsInGates[ gateIndex ] = client;
+       expectedClientsInGates[ gateIndex ] = clientsQueue.top();;
        clientsQueue.pop();
 
 
@@ -117,7 +115,7 @@ std::vector<std::string> PostOffice::getStatus() {
         if( it != expectedClientsInGates.end() )
             statusVector.push_back( expectedClientsInGates[i]->getFullName() );
         else
-            statusVector.push_back( std::string() );
+            statusVector.emplace_back( std::string() );
     }
 
     return statusVector;
@@ -129,7 +127,7 @@ std::vector<std::string> PostOffice::getStatus() {
 
     auto gate = expectedClientsInGates.find( gateIndex );
 
-    if( gateIndex > this->gateCount)
+    if( gateIndex >= this->gateCount)
         throw IncorrectGateException( "There is no gate with this ID" );
 
     if( gate == expectedClientsInGates.end()  )

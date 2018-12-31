@@ -43,9 +43,8 @@ void Client::newPackage(const std::string &packageId) {
             if ((*i) == packageId)
                 throw PackageExistsException("package with specified ID already exists.\n");
         }
-        packages.push_back( packageId );
     }
-    else
+
         packages.push_back( packageId );
 
 }
@@ -79,7 +78,7 @@ const std::string& Client::getBiometricData(){
 }
 
 
-void displayArray(   std::vector< std::vector<int> > array , int lenght1, int lenght2)
+void displayArray(  std::vector< std::vector<int> > array , int lenght1, int lenght2)
 {
     for (int i = 0; i < lenght1; ++i) {
         for (int j = 0; j < lenght2; ++j) {
